@@ -47,4 +47,9 @@ public class Category {
 			return false;
 		return true;
 	}
+	
+	public String toCSVString()
+	{
+		return String.format("%d,\"%s\"\n", categoryID, name);
+	}
 }

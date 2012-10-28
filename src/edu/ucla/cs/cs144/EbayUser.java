@@ -70,4 +70,9 @@ public class EbayUser {
 		result = prime * result + ((userID == null) ? 0 : userID.hashCode());
 		return result;
 	}
+	
+	public String toCSVString()
+	{
+		return String.format("%s,%s,\"%s\",\"%s\"\n", userID, rating, country, location);
+	}
 }

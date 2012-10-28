@@ -306,6 +306,19 @@ class MyParser {
         }
         
         /* Write sets out to files */
-        Iterator<EbayUser> ebayUserIterator = ebayUserSet.iterator();
+		try {
+			FileWriter ebayUserStream = new FileWriter("EbayUser.csv");
+
+	        BufferedWriter ebayUserWriter = new BufferedWriter(ebayUserStream);
+	        Iterator<EbayUser> ebayUserIterator = ebayUserSet.iterator();
+	        while (ebayUserIterator.hasNext())
+	        {
+	        	EbayUser user = ebayUserIterator.next();
+	        	ebayUserWriter.write(user.toCSVString()); 	
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }

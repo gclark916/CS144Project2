@@ -111,4 +111,17 @@ public class Item {
 			return false;
 		return true;
 	}
+	
+	public String toCSVString()
+	{
+		return String.format("%s,\"%s\",%s,%s,%s,%s,\"%s\",\"%s\"\n", 
+				itemID, 
+				name, 
+				buyNowPrice, 
+				minimumBid,
+				startTime,
+				endTime,
+				description,
+				sellerID);
+	}
 }

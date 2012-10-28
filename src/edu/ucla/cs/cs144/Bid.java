@@ -76,4 +76,9 @@ public class Bid {
 			return false;
 		return true;
 	}
+	
+	public String toCSVString()
+	{
+		return String.format("%d,%s,\"%s\",%s,%s", bidID, itemID, bidderID, time, amount);
+	}
 }
