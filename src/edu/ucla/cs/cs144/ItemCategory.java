@@ -56,4 +56,9 @@ public class ItemCategory {
 			return false;
 		return true;
 	}
+
+	public String toCSVString()
+	{
+		return String.format("%d,%s,%d\n", itemCategoryRelationID, itemID, categoryID);
+	}
 }

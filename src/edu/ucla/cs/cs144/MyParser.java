@@ -308,14 +308,60 @@ class MyParser {
         /* Write sets out to files */
 		try {
 			FileWriter ebayUserStream = new FileWriter("EbayUser.csv");
-
 	        BufferedWriter ebayUserWriter = new BufferedWriter(ebayUserStream);
 	        Iterator<EbayUser> ebayUserIterator = ebayUserSet.iterator();
 	        while (ebayUserIterator.hasNext())
 	        {
 	        	EbayUser user = ebayUserIterator.next();
-	        	ebayUserWriter.write(user.toCSVString()); 	
+	        	ebayUserWriter.write(user.toCSVString()); 
 	        }
+	        ebayUserWriter.close();
+	        ebayUserStream.close();
+	        
+	        FileWriter categoryStream = new FileWriter("Category.csv");
+	        BufferedWriter categoryWriter = new BufferedWriter(categoryStream);
+	        Iterator<Category> categoryIterator = categorySet.iterator();
+	        while (categoryIterator.hasNext())
+	        {
+	        	Category category = categoryIterator.next();
+	        	categoryWriter.write(category.toCSVString()); 	
+	        }
+	        categoryWriter.close();
+	        categoryStream.close();
+	        
+	        FileWriter itemStream = new FileWriter("Item.csv");
+	        BufferedWriter itemWriter = new BufferedWriter(itemStream);
+	        Iterator<Item> itemIterator = itemSet.iterator();
+	        while (itemIterator.hasNext())
+	        {
+	        	Item item = itemIterator.next();
+	        	itemWriter.write(item.toCSVString()); 	
+	        }
+	        itemWriter.close();
+	        itemStream.close();
+	        
+	        FileWriter itemCategoryStream = new FileWriter("ItemCategory.csv");
+	        BufferedWriter itemCategoryWriter = new BufferedWriter(itemCategoryStream);
+	        Iterator<ItemCategory> itemCategoryIterator = itemCategorySet.iterator();
+	        while (itemCategoryIterator.hasNext())
+	        {
+	        	ItemCategory itemCategory = itemCategoryIterator.next();
+	        	itemCategoryWriter.write(itemCategory.toCSVString()); 	
+	        }
+	        itemCategoryWriter.close();
+	        itemCategoryStream.close();
+	        
+	        FileWriter bidStream = new FileWriter("Bid.csv");
+	        BufferedWriter bidWriter = new BufferedWriter(bidStream);
+	        Iterator<Bid> bidIterator = bidSet.iterator();
+	        while (bidIterator.hasNext())
+	        {
+	        	Bid bid = bidIterator.next();
+	        	bidWriter.write(bid.toCSVString()); 	
+	        }
+	        bidWriter.close();
+	        bidStream.close();
+	        
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
