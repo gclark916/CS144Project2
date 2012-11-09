@@ -249,7 +249,10 @@ class MyParser {
         		
         		// Create Category object and add to map
         		if (categoryMap.containsKey(categoryName))
-        			categoryID = categoryMap.size();
+        		{
+        			Category categoryObject = categoryMap.get(categoryName);
+        			categoryID = categoryObject.categoryID;
+        		}
         		else
         		{
         			categoryID = categoryMap.size();
@@ -258,7 +261,7 @@ class MyParser {
         		}
         		
         		// Create ItemCategory object and add to set
-        		ItemCategory itemCategoryObject = new ItemCategory(itemCategorySet.size(), itemID, categoryID);
+        		ItemCategory itemCategoryObject = new ItemCategory(itemID, categoryID);
         		itemCategorySet.add(itemCategoryObject);
         	}
         	

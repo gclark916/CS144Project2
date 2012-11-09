@@ -1,19 +1,15 @@
 package edu.ucla.cs.cs144;
 
 public class ItemCategory {
-	long itemCategoryRelationID;
 	String itemID;
 	int categoryID;
-	
+
 	/**
-	 * @param itemCategoryRelationID
 	 * @param itemID
 	 * @param categoryID
 	 */
-	public ItemCategory(long itemCategoryRelationID, String itemID,
-			int categoryID) {
+	public ItemCategory(String itemID, int categoryID) {
 		super();
-		this.itemCategoryRelationID = itemCategoryRelationID;
 		this.itemID = itemID;
 		this.categoryID = categoryID;
 	}
@@ -26,13 +22,10 @@ public class ItemCategory {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + categoryID;
-		result = prime
-				* result
-				+ (int) (itemCategoryRelationID ^ (itemCategoryRelationID >>> 32));
 		result = prime * result + ((itemID == null) ? 0 : itemID.hashCode());
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -47,8 +40,6 @@ public class ItemCategory {
 		ItemCategory other = (ItemCategory) obj;
 		if (categoryID != other.categoryID)
 			return false;
-		if (itemCategoryRelationID != other.itemCategoryRelationID)
-			return false;
 		if (itemID == null) {
 			if (other.itemID != null)
 				return false;
@@ -59,6 +50,6 @@ public class ItemCategory {
 
 	public String toCSVString()
 	{
-		return String.format("%d,%s,%d\n", itemCategoryRelationID, itemID, categoryID);
+		return String.format("%s,%d\n", itemID, categoryID);
 	}
 }
