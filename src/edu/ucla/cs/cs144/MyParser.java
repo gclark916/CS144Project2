@@ -28,6 +28,7 @@ package edu.ucla.cs.cs144;
 import java.io.*;
 import java.text.*;
 import java.util.*;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
@@ -39,6 +40,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 class MyParser {
     
@@ -157,11 +159,24 @@ class MyParser {
         }
     }
     
+    static String convertDateFormat(String inputDate)
+    {
+    	Date date = null;
+    	try {
+			date = new SimpleDateFormat("MMM-dd-yy HH:mm:ss", Locale.ENGLISH).parse(inputDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	String outputDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+    	return outputDate;
+    }
+    
     /* Process one items-???.xml file.
      */
     static void processFile(File xmlFile, 
     		Set<EbayUser> ebayUserSet, 
-    		Set<Category> categorySet, 
+    		Map<String, Category> categoryMap, 
     		Set<Item> itemSet, 
     		Set<ItemCategory> itemCategorySet, 
     		Set<Bid> bidSet) {
@@ -196,16 +211,19 @@ class MyParser {
         {
         	Element item = items[itemIndex];
         	String itemID = item.getAttribute("ItemID");
-        	String name = getElementTextByTagNameNR(item, "Name");
-        	String sellerLocation = getElementTextByTagNameNR(item, "Location");
-        	String sellerCountry = getElementTextByTagNameNR(item, "Country");
-        	String startTime = getElementTextByTagNameNR(item, "Started");
-        	String endTime = getElementTextByTagNameNR(item, "Ends");
+        	String name = StringEscapeUtils.escapeCsv(getElementTextByTagNameNR(item, "Name"));
+        	String sellerLocation = StringEscapeUtils.escapeCsv(getElementTextByTagNameNR(item, "Location"));
+        	String sellerCountry = StringEscapeUtils.escapeCsv(getElementTextByTagNameNR(item, "Country"));
+        	String startTime = convertDateFormat(getElementTextByTagNameNR(item, "Started"));
+        	String endTime = convertDateFormat(getElementTextByTagNameNR(item, "Ends"));
         	String description = getElementTextByTagNameNR(item, "Description");
         	if (description.length() > 4000)
         		description = description.substring(0, 4000);
+        	description = StringEscapeUtils.escapeCsv(description);
         	String minimumBid = strip(getElementTextByTagNameNR(item, "First_Bid"));
         	String buyNowPrice = strip(getElementTextByTagNameNR(item, "Buy_Price"));
+        	if (buyNowPrice.isEmpty())
+        		buyNowPrice = "0.00";
         	
         	// Parse Seller
         	Element seller = getElementByTagNameNR(item, "Seller");
@@ -226,12 +244,18 @@ class MyParser {
         	for (int categoryIndex = 0; categoryIndex < categoryCount; categoryIndex++)
         	{
         		// Parse Category
-        		String categoryName = getElementText(categories[categoryIndex]);
-        		int categoryID = categorySet.size();
+        		String categoryName = StringEscapeUtils.escapeCsv(getElementText(categories[categoryIndex]));
+        		int categoryID;
         		
-        		// Create Category object and add to set
-        		Category categoryObject = new Category(categoryID, categoryName);
-        		categorySet.add(categoryObject);
+        		// Create Category object and add to map
+        		if (categoryMap.containsKey(categoryName))
+        			categoryID = categoryMap.size();
+        		else
+        		{
+        			categoryID = categoryMap.size();
+        			Category categoryObject = new Category(categoryID, categoryName);
+        			categoryMap.put(categoryName, categoryObject);
+        		}
         		
         		// Create ItemCategory object and add to set
         		ItemCategory itemCategoryObject = new ItemCategory(itemCategorySet.size(), itemID, categoryID);
@@ -246,15 +270,15 @@ class MyParser {
         	{
         		// Parse bid
         		Element bid = bids[bidIndex];
-            	String bidTime = getElementTextByTagNameNR(bid, "Time");
+            	String bidTime = convertDateFormat(getElementTextByTagNameNR(bid, "Time"));
         		String bidAmount = strip(getElementTextByTagNameNR(bid, "Amount"));
         		
         		// Parse bidder
         		Element bidder = getElementByTagNameNR(bid, "Bidder");
-        		String bidderID = bidder.getAttribute("UserID");
+        		String bidderID = StringEscapeUtils.escapeCsv(bidder.getAttribute("UserID"));
         		String bidderRating = bidder.getAttribute("Rating");
-        		String bidderLocation = getElementTextByTagNameNR(bidder, "Location");
-            	String bidderCountry = getElementTextByTagNameNR(bidder, "Country");
+        		String bidderLocation = StringEscapeUtils.escapeCsv(getElementTextByTagNameNR(bidder, "Location"));
+            	String bidderCountry = StringEscapeUtils.escapeCsv(getElementTextByTagNameNR(bidder, "Country"));
         		
         		// Create EbayUser object and add to set
         		EbayUser bidderObject = new EbayUser(bidderID, bidderRating, bidderCountry, bidderLocation);
@@ -294,7 +318,7 @@ class MyParser {
         }
         
         Set<EbayUser> ebayUserSet = new HashSet<EbayUser>();
-        Set<Category> categorySet = new HashSet<Category>();
+        Map<String, Category> categoryMap = new HashMap<String, Category>();
         Set<Item> itemSet = new HashSet<Item>();
         Set<ItemCategory> itemCategorySet = new HashSet<ItemCategory>();
         Set<Bid> bidSet = new HashSet<Bid>();
@@ -302,7 +326,7 @@ class MyParser {
         /* Process all files listed on command line. */
         for (int i = 0; i < args.length; i++) {
             File currentFile = new File(args[i]);
-            processFile(currentFile, ebayUserSet, categorySet, itemSet, itemCategorySet, bidSet);
+            processFile(currentFile, ebayUserSet, categoryMap, itemSet, itemCategorySet, bidSet);
         }
         
         /* Write sets out to files */
@@ -320,7 +344,8 @@ class MyParser {
 	        
 	        FileWriter categoryStream = new FileWriter("Category.csv");
 	        BufferedWriter categoryWriter = new BufferedWriter(categoryStream);
-	        Iterator<Category> categoryIterator = categorySet.iterator();
+	        Collection<Category> categoryCollection = categoryMap.values();
+	        Iterator<Category> categoryIterator = categoryCollection.iterator();
 	        while (categoryIterator.hasNext())
 	        {
 	        	Category category = categoryIterator.next();

@@ -114,7 +114,7 @@ public class Item {
 	
 	public String toCSVString()
 	{
-		return String.format("%s,\"%s\",%s,%s,%s,%s,\"%s\",\"%s\"\n", 
+		return String.format("%s,%s,%s,%s,%s,%s,%s,%s\n", 
 				itemID, 
 				name, 
 				buyNowPrice, 

@@ -73,6 +73,6 @@ public class EbayUser {
 	
 	public String toCSVString()
 	{
-		return String.format("%s,%s,\"%s\",\"%s\"\n", userID, rating, country, location);
+		return String.format("%s,%s,%s,%s\n", userID, rating, country, location);
 	}
 }

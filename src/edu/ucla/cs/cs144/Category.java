@@ -50,6 +50,6 @@ public class Category {
 	
 	public String toCSVString()
 	{
-		return String.format("%d,\"%s\"\n", categoryID, name);
+		return String.format("%d,%s\n", categoryID, name);
 	}
 }
